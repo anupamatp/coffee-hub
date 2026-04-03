@@ -1,5 +1,6 @@
 import React from 'react';
 import { ShoppingCart, Menu, X, Coffee, Star, MapPin, Zap,User,BookOpen, ArrowRight } from 'lucide-react'; // Using Lucide Icons for simplicity
+import { useNavigate } from 'react-router-dom';
 
 import HeroSection from './HeroSection';
 
@@ -11,6 +12,7 @@ const blogImage3 = 'https://plus.unsplash.com/premium_photo-1670758291967-25ed2e
 
 const LandingPage = () => {
 
+    const navigate = useNavigate();
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     
     const [isChatOpen, setIsChatOpen] = React.useState(false);
@@ -136,7 +138,7 @@ Answer like a friendly coffee shop assistant.
                     {/* CTA Button & Cart Icon */}
                     <div className="flex items-center space-x-4">
                         <button 
-                        onClick={() => { window.location.href = '/login'; }}
+                        onClick={() => navigate('/login')}
                         className="hidden md:flex items-center bg-[#8B5A2B] text-white px-6 py-2 rounded-full hover:bg-[#A06D3E] transition-all duration-300 shadow-md">
                             <User className="w-4 h-4 mr-2" /> Login / Sign Up
                         </button>

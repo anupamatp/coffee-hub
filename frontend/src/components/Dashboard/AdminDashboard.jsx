@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Home, Users, LogOut, Coffee, Menu, UtensilsCrossed, ClipboardList, LayoutDashboard, FileText, MessageSquare, UserPlus } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Sidebar Link Component
 const SidebarLink = ({ name, icon: Icon, activeTab, setActiveTab, isCollapsed }) => (
@@ -21,6 +22,7 @@ const SidebarLink = ({ name, icon: Icon, activeTab, setActiveTab, isCollapsed })
 );
 
 export default function AdminDashboard() {
+  const navigate = useNavigate();
   // --- STATE MANAGEMENT ---
   const [activeTab, setActiveTab] = useState('Dashboard');
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -362,7 +364,7 @@ const fetchOrders = async () => {
   };
 
   const handleLogout = () => {
-    window.location.href = "/login";
+    navigate("/login");
   };
 
   const toggleSidebar = () => {
