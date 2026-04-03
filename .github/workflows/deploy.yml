@@ -30,12 +30,13 @@ jobs:
           
       - name: Install dependencies
         working-directory: ./frontend
-        run: npm install
+        run: |
+          rm package-lock.json
+          npm install
         
       - name: Build
         working-directory: ./frontend
-        run: |
-          npm run build > build_log.txt 2>&1 || (git config user.name "LogBot" && git config user.email "bot@ci.local" && git add build_log.txt && git commit -m "push log" && git push && exit 1)
+        run: npm run build
         
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v4
