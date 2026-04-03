@@ -1,0 +1,142 @@
+﻿{
+    "total_count":  2,
+    "jobs":  [
+                 {
+                     "id":  69816854761,
+                     "run_id":  23937406028,
+                     "workflow_name":  "Deploy Vite site to GitHub Pages",
+                     "head_branch":  "main",
+                     "run_url":  "https://api.github.com/repos/anupamatp/coffee-hub/actions/runs/23937406028",
+                     "run_attempt":  2,
+                     "node_id":  "CR_kwDOQWUsL88AAAAQQWio6Q",
+                     "head_sha":  "5d4ae0c554400ee650ef01f8ce05eac0a132395a",
+                     "url":  "https://api.github.com/repos/anupamatp/coffee-hub/actions/jobs/69816854761",
+                     "html_url":  "https://github.com/anupamatp/coffee-hub/actions/runs/23937406028/job/69816854761",
+                     "status":  "completed",
+                     "conclusion":  "failure",
+                     "created_at":  "2026-04-03T07:04:21Z",
+                     "started_at":  "2026-04-03T07:04:23Z",
+                     "completed_at":  "2026-04-03T07:04:36Z",
+                     "name":  "build",
+                     "steps":  [
+                                   {
+                                       "name":  "Set up job",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  1,
+                                       "started_at":  "2026-04-03T07:04:23Z",
+                                       "completed_at":  "2026-04-03T07:04:25Z"
+                                   },
+                                   {
+                                       "name":  "Checkout",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  2,
+                                       "started_at":  "2026-04-03T07:04:25Z",
+                                       "completed_at":  "2026-04-03T07:04:26Z"
+                                   },
+                                   {
+                                       "name":  "Setup Node",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  3,
+                                       "started_at":  "2026-04-03T07:04:26Z",
+                                       "completed_at":  "2026-04-03T07:04:27Z"
+                                   },
+                                   {
+                                       "name":  "Setup Pages",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  4,
+                                       "started_at":  "2026-04-03T07:04:27Z",
+                                       "completed_at":  "2026-04-03T07:04:27Z"
+                                   },
+                                   {
+                                       "name":  "Install dependencies",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  5,
+                                       "started_at":  "2026-04-03T07:04:27Z",
+                                       "completed_at":  "2026-04-03T07:04:33Z"
+                                   },
+                                   {
+                                       "name":  "Build",
+                                       "status":  "completed",
+                                       "conclusion":  "failure",
+                                       "number":  6,
+                                       "started_at":  "2026-04-03T07:04:33Z",
+                                       "completed_at":  "2026-04-03T07:04:33Z"
+                                   },
+                                   {
+                                       "name":  "Upload artifact",
+                                       "status":  "completed",
+                                       "conclusion":  "skipped",
+                                       "number":  7,
+                                       "started_at":  "2026-04-03T07:04:33Z",
+                                       "completed_at":  "2026-04-03T07:04:33Z"
+                                   },
+                                   {
+                                       "name":  "Post Setup Node",
+                                       "status":  "completed",
+                                       "conclusion":  "skipped",
+                                       "number":  13,
+                                       "started_at":  "2026-04-03T07:04:33Z",
+                                       "completed_at":  "2026-04-03T07:04:33Z"
+                                   },
+                                   {
+                                       "name":  "Post Checkout",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  14,
+                                       "started_at":  "2026-04-03T07:04:33Z",
+                                       "completed_at":  "2026-04-03T07:04:33Z"
+                                   },
+                                   {
+                                       "name":  "Complete job",
+                                       "status":  "completed",
+                                       "conclusion":  "success",
+                                       "number":  15,
+                                       "started_at":  "2026-04-03T07:04:33Z",
+                                       "completed_at":  "2026-04-03T07:04:33Z"
+                                   }
+                               ],
+                     "check_run_url":  "https://api.github.com/repos/anupamatp/coffee-hub/check-runs/69816854761",
+                     "labels":  [
+                                    "ubuntu-latest"
+                                ],
+                     "runner_id":  1000000010,
+                     "runner_name":  "GitHub Actions 1000000010",
+                     "runner_group_id":  0,
+                     "runner_group_name":  "GitHub Actions"
+                 },
+                 {
+                     "id":  69816875151,
+                     "run_id":  23937406028,
+                     "workflow_name":  "Deploy Vite site to GitHub Pages",
+                     "head_branch":  "main",
+                     "run_url":  "https://api.github.com/repos/anupamatp/coffee-hub/actions/runs/23937406028",
+                     "run_attempt":  2,
+                     "node_id":  "CR_kwDOQWUsL88AAAAQQWj4jw",
+                     "head_sha":  "5d4ae0c554400ee650ef01f8ce05eac0a132395a",
+                     "url":  "https://api.github.com/repos/anupamatp/coffee-hub/actions/jobs/69816875151",
+                     "html_url":  "https://github.com/anupamatp/coffee-hub/actions/runs/23937406028/job/69816875151",
+                     "status":  "completed",
+                     "conclusion":  "skipped",
+                     "created_at":  "2026-04-03T07:04:36Z",
+                     "started_at":  "2026-04-03T07:04:36Z",
+                     "completed_at":  "2026-04-03T07:04:36Z",
+                     "name":  "Deploy",
+                     "steps":  [
+
+                               ],
+                     "check_run_url":  "https://api.github.com/repos/anupamatp/coffee-hub/check-runs/69816875151",
+                     "labels":  [
+                                    "ubuntu-latest"
+                                ],
+                     "runner_id":  null,
+                     "runner_name":  null,
+                     "runner_group_id":  null,
+                     "runner_group_name":  null
+                 }
+             ]
+}
