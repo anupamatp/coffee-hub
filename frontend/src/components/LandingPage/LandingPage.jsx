@@ -1,16 +1,28 @@
 import React from 'react';
 import { ShoppingCart, Menu, X, Coffee, Star, MapPin, Zap,User,BookOpen, ArrowRight } from 'lucide-react'; // Using Lucide Icons for simplicity
-import coffeePouring from './coffee2.png';
- const heroImageSrc = coffeePouring;
+
+import HeroSection from './HeroSection';
+
 
  const blogImage1 = 'https://images.unsplash.com/photo-1522659516672-189a712c29af?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687'; // Coffee roasting
 const blogImage2 = 'https://images.unsplash.com/photo-1738224894761-0e5158e55ece?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=751'; // Latte art
 const blogImage3 = 'https://plus.unsplash.com/premium_photo-1670758291967-25ed2e90f21e?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687'; // Beans and tools
 
+
 const LandingPage = () => {
 
     const [isMenuOpen, setIsMenuOpen] = React.useState(false);
     
+    const [isChatOpen, setIsChatOpen] = React.useState(false);
+const [messages, setMessages] = React.useState([
+  {
+    role: 'assistant',
+    content: 'Hello! Welcome to The Coffee Bean! ☕ How can I help you today? I can answer questions about our menu, hours, location, or reservations!'
+  }
+]);
+const [input, setInput] = React.useState('');
+const [isLoading, setIsLoading] = React.useState(false);
+const messagesEndRef = React.useRef(null);
   
     const products = [
         {
@@ -46,13 +58,69 @@ const LandingPage = () => {
         { title: "Latte Art 101: Basic Shapes", date: "Oct 18", author: "Barista Bot", img: blogImage2 },
         { title: "Sourcing Sustainable Coffee", date: "Oct 10", author: "C. Bean", img: blogImage3 },
     ];
+   const handleKeyPress = (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+};
 
+const sendMessage = async () => {
+  if (!input.trim() || isLoading) return;
+
+  const userMessage = input.trim();
+  setInput("");
+  setMessages((prev) => [...prev, { role: "user", content: userMessage }]);
+  setIsLoading(true);
+
+  try {
+    const systemContext = `
+You are a helpful assistant for "The Coffee Bean" restaurant.
+
+Menu:
+- Espresso (₹100)
+- Caramel Macchiato (₹120)
+- Turkish Coffee (₹150)
+
+Hours: 8 AM to 10 PM
+Location: 123 Coffee Lane
+Reservations available.
+
+Answer like a friendly coffee shop assistant.
+`;
+
+    const response = await fetch("http://localhost:8080/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        prompt: systemContext + "\n\nUser: " + userMessage,
+      }),
+    });
+
+    // ✅ Backend returns JSON like { "response": "text" }
+    const data = await response.json();
+    const botResponse = data.response;
+
+    setMessages((prev) => [
+      ...prev,
+      { role: "assistant", content: botResponse },
+    ]);
+  } catch (err) {
+    console.error(err);
+    setMessages((prev) => [
+      ...prev,
+      { role: "assistant", content: "Error occurred. Please try again!" },
+    ]);
+  }
+
+  setIsLoading(false);
+};
     return (
         <div className="min-h-screen font-sans overflow-x-hidden">
             
             {/* --- 1. Header Section --- */}
-            <header className="sticky top-0 z-30 bg-[#F8F5F0] py-4 shadow-md">
-                <div className="container mx-auto flex justify-between items-center px-4 max-w-7xl">
+            <header className="fixed top-0 left-0 right-0 z-50 bg-[#F8F5F0] py-4 shadow-md">
+    <div className="container mx-auto flex justify-between items-center px-4 max-w-7xl">
                     {/* Logo */}
                     <a href="#" className="text-3xl font-serif font-bold text-[#5C4033] tracking-wider">The Coffee Bean</a>
 
@@ -70,7 +138,7 @@ const LandingPage = () => {
                         <button 
                         onClick={() => { window.location.href = '/login'; }}
                         className="hidden md:flex items-center bg-[#8B5A2B] text-white px-6 py-2 rounded-full hover:bg-[#A06D3E] transition-all duration-300 shadow-md">
-                            <User className="w-4 h-4 mr-2" /> Sign in
+                            <User className="w-4 h-4 mr-2" /> Login / Sign Up
                         </button>
                         {/* Mobile Menu Button */}
                         <button className="md:hidden text-[#5C4033]" onClick={() => setIsMenuOpen(!isMenuOpen)}>
@@ -93,50 +161,8 @@ const LandingPage = () => {
                     </button>
                 </div>
             )}
-            
-            {/* --- 2. Hero Section --- */}
-            <section className="relative bg-[#59260b] py-0 md:py-0 overflow-hidden">
-                <div className="container mx-auto flex flex-col md:flex-row items-center justify-between px-4 max-w-7xl">
-                    {/* Text Content */}
-                    <div className="text-center md:text-left md:w-1/2 mb-12 md:mb-0">
-                        <h1 className="text-6xl lg:text-8xl font-extrabold text-[#ffffff] leading-tight mb-6">
-                            Start Strong,<br />Stay Fresh.
-                        </h1>
-                        <p className="text-lg md:text-xl text-[#7A604D] mb-10 max-w-md mx-auto md:mx-0">
-                            Experience the rich aroma and exquisite taste of our freshly brewed coffee.
-                        </p>
-                        <div className="flex justify-center md:justify-start space-x-4">
-                            <button className="bg-[#8B5A2B] text-white px-8 py-3 rounded-full text-lg font-semibold hover:bg-[#A06D3E] transition-colors duration-300 shadow-lg">
-                                Explore Menu
-                            </button>
-                            <button className="border border-[#8B5A2B] text-[#8B5A2B] px-8 py-3 rounded-full text-lg font-semibold hover:bg-[#E0DCCA] transition-colors duration-300">
-                                Learn More
-                            </button>
-                        </div>
-                        <div className="flex justify-center md:justify-start space-x-4 mt-12">
-    {/* Stat Card 1 */}
-    <div className="bg-white p-4 rounded-xl shadow-2xl text-center min-w-[120px]">
-        <p className="text-3xl font-extrabold text-[#5C4033]">20K+</p>
-        <p className="text-sm text-gray-500">Clients</p>
-    </div>
-    {/* Stat Card 2 */}
-    <div className="bg-white p-4 rounded-xl shadow-2xl text-center min-w-[120px] hidden sm:block">
-        <p className="text-3xl font-extrabold text-[#5C4033]">10+</p>
-        <p className="text-sm text-gray-500">Varieties</p>
-    </div>
-</div>
-                    </div>
-                    <div className="md:w-1/2 flex justify-center md:justify-end relative">  
-                        <img
-                          src={heroImageSrc}    
-                         alt="Large coffee cup with splash and beans"
-                            className="w-full max-w-sm md:max-w-md lg:max-w-lg object-contain relative z-10 rounded-xl animate-float"
-                        />
-                        
-                    
-                    </div>
-                </div>
-            </section>
+            <HeroSection/>
+           
             
             {/* --- 3. Passion Brewed to Perfection Section  --- */}
             <section className="py-20 bg-white" id="about-us">
@@ -357,8 +383,90 @@ const LandingPage = () => {
                     </div>
                 </div>
             </footer>
+
+            {/* --- 9. Chatbot Section --- */}
+            {/* Chatbot Button */}
+            <button
+  onClick={() => setIsChatOpen(!isChatOpen)}
+  className="fixed bottom-6 right-6 bg-[#8B5A2B] text-white p-4 rounded-full shadow-2xl hover:bg-[#A06D3E] transition-all hover:scale-110 z-50"
+  aria-label="Toggle chatbot"
+>
+  {isChatOpen ? <X className="w-6 h-6" /> : <Coffee className="w-6 h-6" />}
+</button>
+
+{/* Chatbot Window */}
+{isChatOpen && (
+  <div className="fixed bottom-24 right-6 w-96 h-[500px] bg-white rounded-2xl shadow-2xl flex flex-col z-50 border-2 border-[#8B5A2B]">
+    {/* Chat Header */}
+    <div className="bg-[#8B5A2B] text-white p-4 rounded-t-2xl flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <Coffee className="w-5 h-5" />
+        <div>
+          <h3 className="font-bold">Coffee Bean Assistant</h3>
+          <p className="text-xs text-amber-100">Online •</p>
         </div>
+      </div>
+      <button onClick={() => setIsChatOpen(false)} className="hover:bg-[#A06D3E] p-1 rounded">
+        <X className="w-5 h-5" />
+      </button>
+    </div>
+
+    {/* Messages Area */}
+    <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+      {messages.map((message, index) => (
+        <div
+          key={index}
+          className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+        >
+          <div
+            className={`max-w-[80%] p-3 rounded-2xl ${
+              message.role === 'user'
+                ? 'bg-[#8B5A2B] text-white rounded-br-none'
+                : 'bg-white text-gray-800 shadow-sm rounded-bl-none border border-gray-200'
+            }`}
+          >
+            <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+          </div>
+        </div>
+      ))}
+      {isLoading && (
+        <div className="flex justify-start">
+          <div className="bg-white text-gray-800 p-3 rounded-2xl rounded-bl-none shadow-sm border border-gray-200">
+            <div className="w-5 h-5 border-2 border-[#8B5A2B] border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        </div>
+      )}
+      <div ref={messagesEndRef} />
+    </div>
+
+    {/* Input Area */}
+    <div className="p-4 border-t border-gray-200 bg-white rounded-b-2xl">
+      <div className="flex gap-2">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyPress}
+          placeholder="Ask me anything..."
+          className="flex-1 bg-white p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#8B5A2B] text-gray-800"
+          disabled={isLoading}
+        />
+        <button
+          onClick={sendMessage}
+          disabled={isLoading || !input.trim()}
+          className="bg-[#8B5A2B] text-white p-3 rounded-lg hover:bg-[#A06D3E] disabled:opacity-50 disabled:cursor-not-allowed transition"
+        >
+          <ArrowRight className="w-5 h-5" />
+        </button>
+      </div>
+     
+    </div>
+  </div>
+)}
+        </div>
+        
     );
 };
+
 
 export default LandingPage;

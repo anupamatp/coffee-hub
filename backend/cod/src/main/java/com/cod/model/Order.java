@@ -19,22 +19,22 @@ public class Order {
     private String status;
     private Double totalAmount;
 
+    private String paymentId; // Payment reference (optional)
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> items;
 
-    // Getters and Setters
+    // NEW FIELD: track if feedback has been given
+    private boolean feedbackGiven = false;
+
+    // ---------------- Getters and Setters ----------------
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
+    public User getUser() { return user; }
+    public void setUser(User user) { this.user = user; }
 
     public Integer getTableNumber() { return tableNumber; }
     public void setTableNumber(Integer tableNumber) { this.tableNumber = tableNumber; }
@@ -45,9 +45,15 @@ public class Order {
     public Double getTotalAmount() { return totalAmount; }
     public void setTotalAmount(Double totalAmount) { this.totalAmount = totalAmount; }
 
+    public String getPaymentId() { return paymentId; }
+    public void setPaymentId(String paymentId) { this.paymentId = paymentId; }
+
     public LocalDateTime getCreatedAt() { return createdAt; }
     public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
     public List<OrderItem> getItems() { return items; }
     public void setItems(List<OrderItem> items) { this.items = items; }
+
+    public boolean isFeedbackGiven() { return feedbackGiven; }
+    public void setFeedbackGiven(boolean feedbackGiven) { this.feedbackGiven = feedbackGiven; }
 }

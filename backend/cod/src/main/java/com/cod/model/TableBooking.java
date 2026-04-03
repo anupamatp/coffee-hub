@@ -10,19 +10,29 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "table_bookings")
 public class TableBooking {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private int tableNumber;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "table_id", nullable = false)
+    private TableEntity table;
 
+    @Column(name = "booking_time", nullable = false)
     private LocalDateTime bookingTime;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private boolean available = true; // default true
+    @Column(name = "number_of_people", nullable = false)
+    private int numberOfPeople;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private int numberOfPeople; // NEW: number of people
+    private BookingStatus status = BookingStatus.CONFIRMED;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 }

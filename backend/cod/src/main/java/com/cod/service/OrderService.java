@@ -20,46 +20,98 @@ public class OrderService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private EmailService emailService;
+
+    // --------------------------
+    // PLACE ORDER
+    // --------------------------
     public Order placeOrder(Long userId, Integer tableNumber, List<OrderItem> items) {
 
-        // Fetch user from DB
-        User user = userRepository.findById(userId).orElseThrow(
-                () -> new RuntimeException("User not found with ID: " + userId)
-        );
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Order order = new Order();
-        order.setUser(user);  // ← Set user object, NOT userId
-        order.setTableNumber(tableNumber);
-        order.setStatus("Pending");
+        order.setUser(user);
+        order.setTableNumber(tableNumber);          // ensure table number is stored
+        order.setStatus("Pending");                 // initial workflow status
 
         double total = 0.0;
         List<OrderItem> orderItems = new ArrayList<>();
 
-        for (OrderItem reqItem : items) {
-            MenuItem menu = menuRepo.findById(reqItem.getMenuItemId()).orElse(null);
-            if (menu == null) continue;
+        if (items != null) {
+            for (OrderItem reqItem : items) {
+                // Find menu item details
+                MenuItem menu = menuRepo.findById(reqItem.getMenuItemId()).orElse(null);
+                if (menu == null) continue;
 
-            OrderItem item = new OrderItem();
-            item.setMenuItemId(menu.getId());
-            item.setMenuItemName(menu.getName());
-            item.setMenuItemPrice(menu.getPrice());
-            item.setQuantity(reqItem.getQuantity());
+                OrderItem item = new OrderItem();
+                item.setMenuItemId(menu.getId());
+                item.setMenuItemName(menu.getName());
+                item.setMenuItemPrice(menu.getPrice());
+                item.setQuantity(reqItem.getQuantity());
 
-            double lineTotal = menu.getPrice() * reqItem.getQuantity();
-            item.setLineTotal(lineTotal);
-            total += lineTotal;
+                double lineTotal = menu.getPrice() * reqItem.getQuantity();
+                item.setLineTotal(lineTotal);
 
-            item.setOrder(order);
-            orderItems.add(item);
+                total += lineTotal;
+                item.setOrder(order); // set back-reference so cascade persists
+                orderItems.add(item);
+            }
         }
 
         order.setItems(orderItems);
         order.setTotalAmount(total);
 
-        return orderRepo.save(order);
+        // Save order first (cascades items)
+        Order savedOrder = orderRepo.save(order);
+
+        // Build items HTML for order confirmation email (simple)
+        StringBuilder itemsHtml = new StringBuilder();
+        for (OrderItem item : orderItems) {
+            itemsHtml.append("<li>")
+                    .append(item.getMenuItemName())
+                    .append(" (x").append(item.getQuantity()).append(")")
+                    .append(" - ₹").append(item.getLineTotal())
+                    .append("</li>");
+        }
+
+        // Send order confirmation email asynchronously
+        new Thread(() -> emailService.sendOrderEmail(
+                user.getEmail(),
+                user.getName(),
+                savedOrder.getId(),
+                savedOrder.getTotalAmount(),
+                itemsHtml.toString()
+        )).start();
+
+        return savedOrder;
     }
 
+    // --------------------------
+    // PAYMENT SUCCESS EMAIL (does NOT change order status)
+    // --------------------------
+    public void sendPaymentSuccessEmail(Order order) {
+        // Async send invoice email (leave order.status untouched)
+        new Thread(() -> emailService.sendOrderInvoiceEmail(
+                order.getUser().getEmail(),
+                order.getUser().getName(),
+                order.getId(),
+                order.getItems(),
+                order.getTotalAmount()
+        )).start();
+    }
 
+    // --------------------------
+    // UPDATE ORDER (persist changes like paymentId or other fields)
+    // --------------------------
+    public void updateOrder(Order order) {
+        orderRepo.save(order);
+    }
+
+    // --------------------------
+    // GET ORDERS
+    // --------------------------
     public List<Order> getOrdersByUser(Long userId) {
         User user = userRepository.findById(userId).orElseThrow();
         return orderRepo.findByUser(user);
@@ -69,9 +121,39 @@ public class OrderService {
         return orderRepo.findAll();
     }
 
+    // --------------------------
+    // UPDATE ORDER STATUS
+    // --------------------------
     public Order updateStatus(Long orderId, String newStatus) {
-        Order order = orderRepo.findById(orderId).orElseThrow();
+
+        Order order = orderRepo.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
         order.setStatus(newStatus);
-        return orderRepo.save(order);
+        Order updatedOrder = orderRepo.save(order);
+
+        // Build items HTML table rows for status-update email
+        StringBuilder itemsHtml = new StringBuilder();
+        if (order.getItems() != null) {
+            for (OrderItem item : order.getItems()) {
+                itemsHtml.append(
+                        "<tr>" +
+                                "<td style='padding:8px; border-bottom:1px solid #ddd;'>" + item.getMenuItemName() + "</td>" +
+                                "<td style='padding:8px; text-align:center; border-bottom:1px solid #ddd;'>" + item.getQuantity() + "</td>" +
+                                "<td style='padding:8px; text-align:right; border-bottom:1px solid #ddd;'>₹" + item.getLineTotal() + "</td>" +
+                                "</tr>"
+                );
+            }
+        }
+
+        // Send status-update email asynchronously
+        new Thread(() -> emailService.sendOrderStatusEmail(
+                order.getUser().getEmail(),
+                order.getUser().getName(),
+                newStatus,
+                itemsHtml.toString()
+        )).start();
+
+        return updatedOrder;
     }
 }

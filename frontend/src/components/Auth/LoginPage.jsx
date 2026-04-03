@@ -1,75 +1,82 @@
 import React, { useState } from 'react';
-import { Mail, Lock, Eye, EyeOff, Coffee, ArrowRight, CheckCircle, User, Award, AlertCircle } from 'lucide-react';
+import { Mail, Lock, Eye, EyeOff, Coffee, ArrowRight, CheckCircle, User, Award, X, ArrowDown } from 'lucide-react';
 import { useNavigate } from "react-router-dom";
 
 const rightPanelBg = 'https://images.unsplash.com/photo-1630040995437-80b01c5dd52d?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080';
+const pageBg = 'https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=2561&auto=format&fit=crop';
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  
+  // --- TOAST STATE ---
+  const [toastInfo, setToastInfo] = useState({ message: '', type: '' });
   const navigate = useNavigate();
 
-  // Handle form input
+  // Helper to show toast and auto-hide it
+  const showToast = (message, type) => {
+    setToastInfo({ message, type });
+    // Hide after 3 seconds
+    setTimeout(() => {
+      setToastInfo({ message: '', type: '' });
+    }, 3000);
+  };
+
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData(prev => ({ ...prev, [id]: value }));
   };
 
   // ✅ Backend-connected login logic
-  const handleLogin = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+ const handleLogin = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-    try {
-      const response = await fetch("http://localhost:8080/api/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password
-        }),
-      });
+    try {
+      const response = await fetch("http://localhost:8080/api/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password
+        }),
+      });
 
-      if (response.ok) {
-        const data = await response.json();
+      if (response.ok) {
+        const data = await response.json();
+        
+        // 1. CLEAN THE DATA (Removes hidden spaces)
+        const safeRole = data.role ? data.role.trim() : ""; 
+        
+        // 2. SAVE TO SESSION STORAGE (The correct place now!)
+        sessionStorage.setItem("userRole", safeRole);
+        if (data.id) sessionStorage.setItem("userId", data.id);
 
-        localStorage.setItem("userId", data.id);
-        alert("Login successful!");
+        showToast(`Login successful! Welcome ${data.name}`, 'success');
 
-        const userRole = data.role;
-        switch (userRole) {
-          case "CUSTOMER":
-            navigate("/customer-dashboard");
-            break;
-          case "WAITER":
-            navigate("/waiter-dashboard");
-            break;
-          case "CHEF":
-            navigate("/chef-dashboard");
-            break;
-          case "ADMIN":
-            navigate("/admin-dashboard");
-            break;
-          default:
-            navigate("/");
-        }
-      } else {
-        const text = await response.text();
-        setError(text || "Invalid credentials");
-        alert("Invalid credentials");
-      }
-    } catch (err) {
-      console.error("Login error:", err);
-      setError("Something went wrong. Try again later.");
-    } finally {
-      setLoading(false);
-    }
-  };
+        // 3. NAVIGATE
+        setTimeout(() => {
+            switch (safeRole) {
+              case "CUSTOMER": navigate("/customer-dashboard"); break;
+              case "WAITER": navigate("/waiter-dashboard"); break;
+              case "CHEF": navigate("/chef-dashboard"); break;
+              case "ADMIN": navigate("/admin-dashboard"); break;
+              default: navigate("/");
+            }
+        }, 1000);
 
-  // Right panel features
+      } else {
+        const text = await response.text();
+        showToast(text || "Invalid credentials", 'error');
+      }
+    } catch (err) {
+      console.error("Login error:", err);
+      showToast("Network error. Please try again later.", 'error');
+    } finally {
+      setLoading(false);
+    }
+  };
   const features = [
     { icon: CheckCircle, text: 'Quick & Easy Ordering' },
     { icon: User, text: 'Personalized Recommendations' },
@@ -77,8 +84,25 @@ const LoginPage = () => {
   ];
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4 md:p-10 font-sans">
-      <div className="w-full max-w-6xl mx-auto flex rounded-2xl shadow-2xl overflow-hidden bg-[#F8F5F0]">
+    <div className="min-h-screen flex items-center justify-center p-4 md:p-10 font-sans relative overflow-hidden">
+      
+      {/* 3. RENDER TOAST COMPONENT */}
+      <ToastNotification toast={toastInfo} />
+
+      {/* Blurred Background Layer */}
+      <div 
+        className="absolute inset-0 blur-sm scale-105"
+        style={{
+          backgroundImage: `url(${pageBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+
+      <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+
+      {/* Content Card */}
+      <div className="w-full max-w-6xl mx-auto flex rounded-2xl shadow-2xl overflow-hidden bg-[#F8F5F0] relative z-10">
         
         {/* --- Left Column: Login Form --- */}
         <div className="w-full md:w-1/2 p-6 md:p-12 lg:p-20 flex flex-col items-center justify-center bg-white rounded-l-2xl">
@@ -131,14 +155,6 @@ const LoginPage = () => {
                 </button>
               </div>
             </div>
-
-            {/* Error Message */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg flex items-start gap-2">
-                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
-                <span className="text-xs">{error}</span>
-              </div>
-            )}
 
             {/* Login Button */}
             <button
@@ -206,5 +222,39 @@ const LoginPage = () => {
     </div>
   );
 };
+
+// --- 4. YOUR CUSTOM TOAST COMPONENT ---
+function ToastNotification({ toast }) {
+    if (!toast.message) return null;
+
+    const baseClasses = "fixed bottom-5 right-5 p-4 rounded-xl shadow-2xl text-white font-semibold flex items-center gap-3 z-[9999] transition-all duration-300";
+    let colorClasses = "";
+    let Icon = X;
+
+    switch (toast.type) {
+        case 'success':
+            colorClasses = "bg-green-600";
+            Icon = CheckCircle;
+            break;
+        case 'error':
+            colorClasses = "bg-red-600";
+            Icon = X;
+            break;
+        case 'info':
+            colorClasses = "bg-blue-600";
+            Icon = ArrowDown;
+            break;
+        default:
+            colorClasses = "bg-gray-700";
+            Icon = ArrowDown;
+    }
+
+    return (
+        <div className={`${baseClasses} ${colorClasses} transform transition-all duration-300 scale-100 ease-out animate-fade-in-up`}>
+            <Icon className="w-5 h-5" />
+            <span>{toast.message}</span>
+        </div>
+    );
+}
 
 export default LoginPage;

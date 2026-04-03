@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { 
-  Mail, Lock, Eye, EyeOff, User, Coffee, ArrowRight, Star, CheckCircle, Shield, AlertCircle 
+  Mail, Lock, Eye, EyeOff, User, Coffee, ArrowRight, Star, CheckCircle, AlertCircle, X, ArrowDown 
 } from 'lucide-react';
 
-const leftPanelBg =
-  'https://plus.unsplash.com/premium_photo-1661335368356-d886c8e926c2?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1169';
+const leftPanelBg = 'https://plus.unsplash.com/premium_photo-1661335368356-d886c8e926c2?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=1169';
+const pageBg = 'https://images.unsplash.com/photo-1447933601403-0c6688de566e?q=80&w=2561&auto=format&fit=crop';
 
 const RegisterPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,8 +18,18 @@ const RegisterPage = () => {
     role: 'CUSTOMER',
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  
+  // --- 1. TOAST STATE ---
+  const [toastInfo, setToastInfo] = useState({ message: '', type: '' });
   const navigate = useNavigate();
+
+  // Helper to show toast
+  const showToast = (message, type) => {
+    setToastInfo({ message, type });
+    setTimeout(() => {
+      setToastInfo({ message: '', type: '' });
+    }, 3000);
+  };
 
   // --- handle input change ---
   const handleChange = (e) => {
@@ -30,10 +40,10 @@ const RegisterPage = () => {
   // --- handle submit (backend connection) ---
   const handleRegister = async (e) => {
     e.preventDefault();
-    setError('');
-
+    
+    // Validate Passwords
     if (formData.password !== formData.confirmPassword) {
-      setError("Passwords do not match.");
+      showToast("Passwords do not match.", "error");
       return;
     }
 
@@ -51,23 +61,46 @@ const RegisterPage = () => {
       });
 
       if (response.ok) {
-        alert("Registration successful! Please login.");
-        navigate("/login");
+        // --- 2. SUCCESS TOAST & REDIRECT ---
+        showToast("Registration successful! Redirecting to login...", "success");
+        
+        setTimeout(() => {
+            navigate("/login");
+        }, 2000);
+        
       } else {
         const text = await response.text();
-        setError(text || "Registration failed!");
+        showToast(text || "Registration failed!", "error");
       }
     } catch (err) {
       console.error("Error during registration:", err);
-      setError("Something went wrong. Please try again later.");
+      showToast("Network error. Please try again later.", "error");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4 md:p-10 font-sans">
-      <div className="w-full max-w-6xl mx-auto flex rounded-2xl shadow-2xl overflow-hidden bg-[#F8F5F0] h-[85vh] md:h-[90vh]">
+    <div className="min-h-screen flex items-center justify-center p-4 md:p-10 font-sans relative overflow-hidden">
+
+      {/* 3. RENDER TOAST COMPONENT */}
+      <ToastNotification toast={toastInfo} />
+
+      {/* Background Image */}
+      <div 
+        className="absolute inset-0 blur-sm scale-105"
+        style={{
+          backgroundImage: `url(${pageBg})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+        }}
+      />
+      
+      {/* Overlay */}
+      <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+
+      {/* Content Card */}
+      <div className="w-full max-w-6xl mx-auto flex rounded-2xl shadow-2xl overflow-hidden bg-[#F8F5F0] h-[85vh] md:h-[90vh] relative z-10">
         
         {/* Left Column */}
         <div className="hidden md:block md:w-1/2 relative rounded-l-2xl overflow-hidden">
@@ -204,6 +237,7 @@ const RegisterPage = () => {
                   {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                 </button>
               </div>
+              {/* Inline Password Match Check */}
               {formData.confirmPassword && (
                 <div className="mt-1.5 flex items-center gap-2 text-xs">
                   {formData.password === formData.confirmPassword ? (
@@ -220,15 +254,6 @@ const RegisterPage = () => {
                 </div>
               )}
             </div>
-
-
-            {/* Error */}
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg flex items-start gap-2 text-sm">
-                <AlertCircle className="w-4 h-4 mt-0.5" />
-                <span>{error}</span>
-              </div>
-            )}
 
             {/* Submit */}
             <button
@@ -259,5 +284,39 @@ const RegisterPage = () => {
     </div>
   );
 };
+
+// --- 4. REUSABLE TOAST COMPONENT ---
+function ToastNotification({ toast }) {
+    if (!toast.message) return null;
+
+    const baseClasses = "fixed bottom-5 right-5 p-4 rounded-xl shadow-2xl text-white font-semibold flex items-center gap-3 z-[9999] transition-all duration-300";
+    let colorClasses = "";
+    let Icon = X;
+
+    switch (toast.type) {
+        case 'success':
+            colorClasses = "bg-green-600";
+            Icon = CheckCircle;
+            break;
+        case 'error':
+            colorClasses = "bg-red-600";
+            Icon = X;
+            break;
+        case 'info':
+            colorClasses = "bg-blue-600";
+            Icon = ArrowDown;
+            break;
+        default:
+            colorClasses = "bg-gray-700";
+            Icon = ArrowDown;
+    }
+
+    return (
+        <div className={`${baseClasses} ${colorClasses} transform transition-all duration-300 scale-100 ease-out animate-fade-in-up`}>
+            <Icon className="w-5 h-5" />
+            <span>{toast.message}</span>
+        </div>
+    );
+}
 
 export default RegisterPage;
