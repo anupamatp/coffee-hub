@@ -13,7 +13,7 @@ const reserveTableBg = "https://images.unsplash.com/photo-1612192527395-06b72da6
 const discoverMenuBg = 'https://plus.unsplash.com/premium_photo-1670445287612-d6fed960c910?ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&q=80&w=687';
 
 
-const API_BASE_URL = 'http://localhost:8080/api/menu';
+const API_BASE_URL = 'https://coffee-hub-m4zc.onrender.com/api/menu';
 
 
 function SectionTitle({ title, subtitle }) {
@@ -193,13 +193,13 @@ function HomeView({ setActiveSection }) {
         
         // Fetch bookings
         if (userId) {
-            fetch(`http://localhost:8080/api/bookings/user/${userId}`)
+            fetch(`https://coffee-hub-m4zc.onrender.com/api/bookings/user/${userId}`)
                 .then(res => res.json())
                 .then(data => setBookings(Array.isArray(data) ? data : []))
                 .catch(err => console.error('Error fetching bookings:', err));
             
             // Fetch orders
-            fetch(`http://localhost:8080/api/orders/user/${userId}`)
+            fetch(`https://coffee-hub-m4zc.onrender.com/api/orders/user/${userId}`)
                 .then(res => res.json())
                 .then(data => setOrders(Array.isArray(data) ? data : []))
                 .catch(err => console.error('Error fetching orders:', err));
@@ -392,7 +392,7 @@ function MenuScreen({ cart, setCart, showToast, setActiveSection }) {
             setLoading(true);
             setError(null);
 
-            const response = await fetch(`http://localhost:8080/api/menu/all`);
+            const response = await fetch(`https://coffee-hub-m4zc.onrender.com/api/menu/all`);
 
             if (!response.ok) {
                 throw new Error('Failed to fetch menu items');
@@ -749,9 +749,9 @@ function OrdersScreen() {
             const userId = sessionStorage.getItem("userId");
             let response;
             if (userId) {
-                response = await fetch(`http://localhost:8080/api/orders/user/${userId}`);
+                response = await fetch(`https://coffee-hub-m4zc.onrender.com/api/orders/user/${userId}`);
             } else {
-                response = await fetch('http://localhost:8080/api/orders');
+                response = await fetch('https://coffee-hub-m4zc.onrender.com/api/orders');
             }
             if (!response.ok) throw new Error('Failed to fetch orders');
             const data = await response.json();
@@ -861,7 +861,7 @@ function OrdersScreen() {
         if (!currentOrder) return;
         try {
             const userId = sessionStorage.getItem("userId");
-            await fetch("http://localhost:8080/api/feedback/add", {
+            await fetch("https://coffee-hub-m4zc.onrender.com/api/feedback/add", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ orderId: currentOrder.id, userId, rating, comment })
@@ -988,7 +988,7 @@ function BookingScreen({ showToast }) {
     const fetchAvailableTables = async () => {
         try {
             setLoading(true);
-            const response = await fetch('http://localhost:8080/api/bookings/tables/available');
+            const response = await fetch('https://coffee-hub-m4zc.onrender.com/api/bookings/tables/available');
             
             if (!response.ok) throw new Error('Failed to fetch tables');
             
@@ -1029,7 +1029,7 @@ function BookingScreen({ showToast }) {
     try {
         setSubmitting(true);
         const response = await fetch(
-            'http://localhost:8080/api/bookings/book',
+            'https://coffee-hub-m4zc.onrender.com/api/bookings/book',
             {
                 method: 'POST',
                 headers: {
@@ -1284,7 +1284,7 @@ function PaymentScreen({ navigate, cart, setCart, subtotal, taxes, total, showTo
             paymentId: response.razorpay_payment_id,
           };
 
-          const backendResponse = await fetch("http://localhost:8080/api/orders", {
+          const backendResponse = await fetch("https://coffee-hub-m4zc.onrender.com/api/orders", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(orderData),
@@ -1433,7 +1433,7 @@ function ProfileScreen({ showToast }) {
     // --------------------------
     const fetchProfile = async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/users/${userId}`);
+            const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/users/${userId}`);
             if (!res.ok) throw new Error("Failed to fetch profile");
 
             const data = await res.json();
@@ -1466,7 +1466,7 @@ function ProfileScreen({ showToast }) {
         }
 
         try {
-            const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+            const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/users/${userId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -1508,7 +1508,7 @@ function ProfileScreen({ showToast }) {
         }
 
         try {
-            const res = await fetch(`http://localhost:8080/api/users/${userId}/password`, {
+            const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/users/${userId}/password`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(passwordData),
@@ -1753,7 +1753,7 @@ function ReportFeedbackScreen({ showToast, setActiveSection }) {
             setLoading(true);
             const userId = sessionStorage.getItem("userId");
 
-            const response = await fetch("http://localhost:8080/api/reports/add", {
+            const response = await fetch("https://coffee-hub-m4zc.onrender.com/api/reports/add", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({

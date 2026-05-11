@@ -59,7 +59,7 @@ export default function WaiterDashboard() {
     const fetchOrders = async () => {
         try {
             setLoading(true);
-            const res = await fetch("http://localhost:8080/api/orders");
+            const res = await fetch("https://coffee-hub-m4zc.onrender.com/api/orders");
             if (!res.ok) throw new Error("Failed to fetch orders");
             const data = await res.json();
 
@@ -81,7 +81,7 @@ export default function WaiterDashboard() {
                     const targetId = order.userId || (order.user && order.user.id);
                     if (targetId) {
                         try {
-                            const userRes = await fetch(`http://localhost:8080/api/users/${targetId}`);
+                            const userRes = await fetch(`https://coffee-hub-m4zc.onrender.com/api/users/${targetId}`);
                             if (userRes.ok) {
                                 const userData = await userRes.json();
                                 customerName = userData.name || userData.email || "Unknown";
@@ -112,7 +112,7 @@ export default function WaiterDashboard() {
     // --- 2. FETCH TABLES (Standardized Endpoint) ---
     const fetchTables = async () => {
         try {
-            const res = await fetch("http://localhost:8080/api/tables/all");
+            const res = await fetch("https://coffee-hub-m4zc.onrender.com/api/tables/all");
             const data = await res.json();
             setTables(Array.isArray(data) ? data : []);
         } catch (error) {
@@ -124,7 +124,7 @@ export default function WaiterDashboard() {
     // Fetch profile data
     const fetchProfile = async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/users/${userId}`);
+            const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/users/${userId}`);
             if (!res.ok) throw new Error("Failed to fetch profile");
             const data = await res.json();
             setProfileData({
@@ -153,7 +153,7 @@ export default function WaiterDashboard() {
     // Update order status to Served
     const handleMarkAsServed = async (orderId) => {
         try {
-            const res = await fetch(`http://localhost:8080/api/orders/${orderId}/status`, {
+            const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/orders/${orderId}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ status: 'Served' })
@@ -176,7 +176,7 @@ export default function WaiterDashboard() {
         const newAvailability = !currentAvailability;
 
         try {
-            const res = await fetch(`http://localhost:8080/api/tables/${tableId}/status?available=${newAvailability}`, {
+            const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/tables/${tableId}/status?available=${newAvailability}`, {
                 method: 'PUT'
             });
             
@@ -195,7 +195,7 @@ export default function WaiterDashboard() {
     // Update profile
     const handleProfileUpdate = async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+            const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/users/${userId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
@@ -230,7 +230,7 @@ export default function WaiterDashboard() {
         }
         
         try {
-            const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+            const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/users/${userId}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({

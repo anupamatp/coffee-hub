@@ -68,7 +68,7 @@ const ChefDashboard = () => {
     const fetchOrders = async () => {
         try {
             setLoading(true);
-            const res = await fetch("http://localhost:8080/api/orders");
+            const res = await fetch("https://coffee-hub-m4zc.onrender.com/api/orders");
             if (!res.ok) throw new Error("Failed to fetch orders");
             const data = await res.json();
 
@@ -89,7 +89,7 @@ const ChefDashboard = () => {
                         const targetId = order.userId || (order.user && order.user.id);
                         if (targetId) {
                             try {
-                                const userRes = await fetch(`http://localhost:8080/api/users/${targetId}`);
+                                const userRes = await fetch(`https://coffee-hub-m4zc.onrender.com/api/users/${targetId}`);
                                 if (userRes.ok) {
                                     const userData = await userRes.json();
                                     customerName = userData.name || userData.email || "Unknown";
@@ -133,7 +133,7 @@ const ChefDashboard = () => {
 
     const fetchProfile = async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/users/${userId}`);
+            const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/users/${userId}`);
             if (!res.ok) throw new Error("Failed to fetch profile");
             const data = await res.json();
             setProfileData({
@@ -148,7 +148,7 @@ const ChefDashboard = () => {
 
     const updateProfile = async () => {
         try {
-            const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+            const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/users/${userId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -182,7 +182,7 @@ const ChefDashboard = () => {
         }
 
         try {
-            const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+            const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/users/${userId}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -245,7 +245,7 @@ const ChefDashboard = () => {
 
     const updateOrderStatus = async (orderId, newStatus) => {
         try {
-            const res = await fetch(`http://localhost:8080/api/orders/${orderId}/status`, {
+            const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/orders/${orderId}/status`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ status: newStatus }),

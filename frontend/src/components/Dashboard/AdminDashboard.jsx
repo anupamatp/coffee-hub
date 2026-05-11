@@ -57,7 +57,7 @@ export default function AdminDashboard() {
     try {
       setLoading(true);
       // Fetches EVERYONE (Customers, Chefs, Waiters)
-      const res = await fetch("http://localhost:8080/api/users");
+      const res = await fetch("https://coffee-hub-m4zc.onrender.com/api/users");
       const data = await res.json();
       setUsers(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -84,7 +84,7 @@ export default function AdminDashboard() {
   const fetchStaff = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:8080/api/admin/staff");
+      const res = await fetch("https://coffee-hub-m4zc.onrender.com/api/admin/staff");
       const data = await res.json();
       setStaff(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -98,7 +98,7 @@ export default function AdminDashboard() {
   const fetchMenuItems = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:8080/api/menu/all");
+      const res = await fetch("https://coffee-hub-m4zc.onrender.com/api/menu/all");
       const data = await res.json();
       setMenuItems(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -112,7 +112,7 @@ export default function AdminDashboard() {
   const fetchFeedbacks = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:8080/api/feedback/all");
+      const res = await fetch("https://coffee-hub-m4zc.onrender.com/api/feedback/all");
       if (!res.ok) throw new Error("Failed to fetch feedbacks");
       const data = await res.json();
       setFeedbacks(Array.isArray(data) ? data : []);
@@ -126,7 +126,7 @@ export default function AdminDashboard() {
 
   const fetchReports = async () => {
     try {
-      const res = await fetch("http://localhost:8080/api/reports/all");
+      const res = await fetch("https://coffee-hub-m4zc.onrender.com/api/reports/all");
       if (!res.ok) throw new Error("Failed to fetch reports");
       const data = await res.json();
       setReports(Array.isArray(data) ? data : []);
@@ -139,7 +139,7 @@ export default function AdminDashboard() {
 const fetchOrders = async () => {
     try {
       setLoading(true);
-      const res = await fetch("http://localhost:8080/api/orders");
+      const res = await fetch("https://coffee-hub-m4zc.onrender.com/api/orders");
       const data = await res.json();
 
       if (!Array.isArray(data)) {
@@ -181,7 +181,7 @@ const fetchOrders = async () => {
 
   const fetchAllTables = async () => {
     try {
-      const res = await fetch("http://localhost:8080/api/tables/all");
+      const res = await fetch("https://coffee-hub-m4zc.onrender.com/api/tables/all");
       const data = await res.json();
       setTables(Array.isArray(data) ? data : []);
     } catch (error) {
@@ -194,7 +194,7 @@ const fetchOrders = async () => {
   const handleAddTable = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:8080/api/tables/add", {
+      const res = await fetch("https://coffee-hub-m4zc.onrender.com/api/tables/add", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ tableNumber: Number(newTable.tableNumber), seats: Number(newTable.seats) }),
@@ -209,14 +209,14 @@ const fetchOrders = async () => {
   const handleDeleteTable = async (id) => {
     if (!window.confirm("Are you sure?")) return;
     try {
-      const res = await fetch(`http://localhost:8080/api/tables/${id}`, { method: "DELETE" });
+      const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/tables/${id}`, { method: "DELETE" });
       if (res.ok) { alert("✅ Table deleted"); fetchAllTables(); } else { alert("❌ Failed"); }
     } catch (err) { console.error(err); }
   };
 
   const handleToggleTableStatus = async (id, currentStatus) => {
     try {
-      const res = await fetch(`http://localhost:8080/api/tables/${id}/status?available=${!currentStatus}`, {
+      const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/tables/${id}/status?available=${!currentStatus}`, {
         method: "PUT",
       });
       if (res.ok) {
@@ -238,7 +238,7 @@ const fetchOrders = async () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await fetch("http://localhost:8080/api/admin/add-user", {
+      const res = await fetch("https://coffee-hub-m4zc.onrender.com/api/admin/add-user", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
@@ -284,7 +284,7 @@ const fetchOrders = async () => {
         formDataToSend.append('imageFile', newItem.imageFile);
       }
 
-      const res = await fetch("http://localhost:8080/api/menu/add", {
+      const res = await fetch("https://coffee-hub-m4zc.onrender.com/api/menu/add", {
         method: "POST",
         body: formDataToSend
       });
@@ -328,7 +328,7 @@ const fetchOrders = async () => {
         formDataToSend.append('imageFile', editingItem.imageFile);
       }
 
-      const res = await fetch(`http://localhost:8080/api/menu/update/${id}`, {
+      const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/menu/update/${id}`, {
         method: "PUT",
         body: formDataToSend
       });
@@ -350,7 +350,7 @@ const fetchOrders = async () => {
   const handleDelete = async (id) => {
     if (!window.confirm("Are you sure you want to delete this item?")) return;
     try {
-      const res = await fetch(`http://localhost:8080/api/menu/${id}`, { method: "DELETE" });
+      const res = await fetch(`https://coffee-hub-m4zc.onrender.com/api/menu/${id}`, { method: "DELETE" });
       if (res.ok) {
         alert("✅ Item deleted successfully.");
         fetchMenuItems();

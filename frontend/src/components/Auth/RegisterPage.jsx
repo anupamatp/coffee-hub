@@ -49,7 +49,7 @@ const RegisterPage = () => {
 
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:8080/api/users/register", {
+      const response = await fetch("https://coffee-hub-m4zc.onrender.com/api/users/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
